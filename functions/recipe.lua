@@ -1,46 +1,53 @@
-function ezlib.recipe.remove.ingredient (value, ingredient)
+local tremove = table.remove
+
+function ezlib.recipe.remove.ingredient (value, target_ingredient)
 	local print = "ezlib.recipe.remove.ingredient\n---------------------------------------------------------------------------------------------\n"
-	local recipe = table.deepcopy(data.raw.recipe[value])
-	if recipe ~= nil then
-		if recipe.normal ~= nil then
-			local ingredients_normal = recipe.normal.ingredients
-			for x,ing in ipairs(ingredients_normal) do
-				if ingredients_normal[x][1] == ingredient or ingredients_normal[x]["name"] == ingredient then
-					--ingredients_normal[x] = nil
-					table.remove (ingredients_normal, x)
-					print = print .. "Removed " .. ingredient .. " from recipe " .. value .. " (difficulty normal).\n"
+	local original_recipe = data.raw.recipe[value]
+	local new_recipe = table.deepcopy(original_recipe)
+	if new_recipe ~= nil then
+		if new_recipe.normal ~= nil then
+			local ingredients_normal = new_recipe.normal.ingredients
+			for i=1, #ingredients_normal do
+				local ingredient = ingredients_normal[i]
+				if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
+					--ingredients_expensive[i] = nil
+					tremove(ingredients_normal, i)
+					print = print .. "Removed " .. target_ingredient .. " from recipe " .. value .. " (difficulty normal).\n"
 				end
 			end
-			data.raw.recipe[value].normal.ingredients = ingredients_normal
-			local ingredients_expensive = recipe.expensive.ingredients
-			for x,ing in ipairs(ingredients_expensive) do
-				if ingredients_expensive[x][1] == ingredient or ingredients_expensive[x]["name"] == ingredient then
-					--ingredients_expensive[x] = nil
-					table.remove (ingredients_expensive, x)
-					print = print .. "Removed " .. ingredient .. " from recipe " .. value .. " (difficulty expensive).\n"
+			original_recipe.normal.ingredients = ingredients_normal
+			local ingredients_expensive = new_recipe.expensive.ingredients
+			for i=1, #ingredients_expensive do
+				local ingredient = ingredients_expensive[i]
+				if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
+					--ingredients_expensive[i] = nil
+					tremove(ingredients_expensive, i)
+					print = print .. "Removed " .. target_ingredient .. " from recipe " .. value .. " (difficulty expensive).\n"
 				end
 			end
-			data.raw.recipe[value].expensive.ingredients = ingredients_normal
+			original_recipe.expensive.ingredients = ingredients_normal
 		else
-			local ingredients = recipe.ingredients
-			for x,ing in ipairs(ingredients) do
-				if ingredients[x][1] == ingredient or ingredients[x]["name"] == ingredient then
-					--ingredients[x] = nil
-					table.remove (ingredients, x)
-					print = print .. "  Removed " .. ingredient .. " from recipe " .. value .. " (no difficulty).\n"
+			local ingredients = new_recipe.ingredients
+			for i=1, #ingredients do
+				local ingredient = ingredients[i]
+				if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
+					--ingredients[i] = nil
+					tremove(ingredients, i)
+					print = print .. "  Removed " .. target_ingredient .. " from recipe " .. value .. " (no difficulty).\n"
 				end
 			end
-			data.raw.recipe[value].ingredients = ingredients
+			original_recipe.ingredients = ingredients
 		end
-		if not recipe.normal then recipe.normal = {} end if not recipe.expensive then recipe.expensive = {} end
-		if recipe.normal.ingredients == ingredients_normal and recipe.expensive.ingredients == ingredients_expensive and recipe.ingredients == ingredients then
-			print = print .. "  [Warning] Ingredient " .. ingredient .. " from recipe " .. value .. " wasnt removed.\n"
-		end
-		if ezlib.debug then
+		if not new_recipe.normal then new_recipe.normal = {} end if not new_recipe.expensive then new_recipe.expensive = {} end
+		-- This seems wrong
+		-- if new_recipe.normal.ingredients == ingredients_normal and new_recipe.expensive.ingredients == ingredients_expensive and new_recipe.ingredients == ingredients then
+		-- 	print = print .. "  [Warning] Ingredient " .. target_ingredient .. " from recipe " .. value .. " wasnt removed.\n"
+		-- end
+		if ezlib.debug_self then
 			log(print .. "---------------------------------------------------------------------------------------------")
 		end
 	else
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  [Warning] Recipe with name " .. value .. " not found.\n---------------------------------------------------------------------------------------------")
 		else
 			log("  [Warning] Recipe with name " .. value .. " not found.")
@@ -48,7 +55,7 @@ function ezlib.recipe.remove.ingredient (value, ingredient)
 	end
 end
 
-function ezlib.recipe.add.ingredient (value, fingredient, famount, ftype)
+function ezlib.recipe.add.ingredient(value, fingredient, famount, ftype)
 	local print = "ezlib.recipe.add.ingredient\n---------------------------------------------------------------------------------------------\n"
 	if ftype ~= nil and ftype ~= "item" or ftype == 1 then
 		ftype = "fluid"
@@ -57,22 +64,23 @@ function ezlib.recipe.add.ingredient (value, fingredient, famount, ftype)
 		ftype = "item"
 		print = print .. "  Type is item\n"
 	end
-	recipe = table.deepcopy(data.raw.recipe[value])
-	if recipe ~= nil then
-		if recipe.normal ~= nil then
-			table.insert(recipe.normal.ingredients, {type=ftype, name=fingredient, amount=famount})
-			table.insert(recipe.expensive.ingredients, {type=ftype, name=fingredient, amount=famount})
-			data.raw.recipe[value].normal.ingredients = recipe.normal.ingredients
-			data.raw.recipe[value].expensive.ingredients = recipe.expensive.ingredients
+	local original_recipe = data.raw.recipe[value]
+	new_recipe = table.deepcopy(original_recipe)
+	if new_recipe ~= nil then
+		if new_recipe.normal ~= nil then
+			table.insert(new_recipe.normal.ingredients, {type=ftype, name=fingredient, amount=famount})
+			table.insert(new_recipe.expensive.ingredients, {type=ftype, name=fingredient, amount=famount})
+			original_recipe.normal.ingredients = new_recipe.normal.ingredients
+			original_recipe.expensive.ingredients = new_recipe.expensive.ingredients
 			print = print .. "  " .. famount .. "x" .. fingredient .. "added to " .. value .. "(normal and expensive).\n"
 		else
-			table.insert(recipe.ingredients, {type=ftype, name=fingredient, amount=famount})
-			data.raw.recipe[value].ingredients = recipe.ingredients
+			table.insert(new_recipe.ingredients, {type=ftype, name=fingredient, amount=famount})
+			original_recipe.ingredients = new_recipe.ingredients
 			print = print .. "  " .. famount .. "x" .. fingredient .. "added to " .. value .. ".\n"
 		end
 	else
 		print = print .. "  [Warning] Recipe with name " .. value .. " not found\n"
-		if not ezlib.debug then
+		if not ezlib.debug_self then
 			log("  [Warning] Recipe with name " .. value .. " not found")
 		end
 	end
@@ -150,53 +158,57 @@ function ezlib.recipe.get.ingredient (value)
 			ingredients = recipe.ingredients
 		end
 		if ftype == 0 then
-			for x,ing in ipairs(ingredients) do
-				if ingredients[x]["type"] == nil then
-					table.insert(out, {type="item", name=ingredients[x][1], amount=ingredients[x][2]})
+			for i=1, #ingredients do
+				local ingredient = ingredients[i]
+				if ingredient["type"] == nil then
+					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
-					table.insert(out, {type=ingredients[x]["type"], name=ingredients[x]["name"], amount=ingredients[x]["amount"]})
+					out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 				end
 			end
 		end
 		if ftype == 1 then
-			for x,ing in ipairs(ingredients) do
-				if ingredients[x]["type"] == nil then
-					table.insert(out, {type="item", name=ingredients[x][1], amount=ingredients[x][2]})
+			for i=1, #ingredients do
+				local ingredient = ingredients[i]
+				if ingredient["type"] == nil then
+					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
-					if ingredients[x]["type"] == "item" then
-						table.insert(out, {type=ingredients[x]["type"], name=ingredients[x]["name"], amount=ingredients[x]["amount"]})
+					if ingredient["type"] == "item" then
+						out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 					end
 				end
 			end
 		end
 		if ftype == 2 then
-			for x,ing in ipairs(ingredients) do
-				if ingredients[x]["type"] == "fluid" then
-					table.insert(out, {type=ingredients[x]["type"], name=ingredients[x]["name"], amount=ingredients[x]["amount"]})
+			for i=1, #ingredients do
+				local ingredient = ingredients[i]
+				if ingredient["type"] == "fluid" then
+					out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 				end
 			end
 		end
 		if fingredient ~= 1 then
-			for x,ing in ipairs(out) do
-				if out[x]["name"] == fingredient then
-					if ezlib.debug then
+			for i=1, #out do
+				local ingredient = out[i]
+				if ingredient["name"] == fingredient then
+					if ezlib.debug_self then
 						log(print .. "  Renurning true\n---------------------------------------------------------------------------------------------")
 					end
 					return true
 				end
 			end
-			if ezlib.debug then
+			if ezlib.debug_self then
 				log(print .. "  Renurning false\n---------------------------------------------------------------------------------------------")
 			end
 			return false
 		else
-			if ezlib.debug then
+			if ezlib.debug_self then
 				log(print .. "  Renurning:" .. ezlib.log.print(out, 0) .. "\n---------------------------------------------------------------------------------------------")
 			end
 			return out
 		end
 	else
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  [Warning] Recipe with name " .. value .. " not found\n---------------------------------------------------------------------------------------------")
 		else
 			log("  [Warning] Recipe with name " .. value .. " not found")
@@ -205,61 +217,65 @@ function ezlib.recipe.get.ingredient (value)
 end
 
 
-function ezlib.recipe.remove.result (value, ingredient)
+function ezlib.recipe.remove.result(value, target_ingredient)
 	local print = "ezlib.recipe.remove.result\n---------------------------------------------------------------------------------------------\n"
-	local recipe = table.deepcopy(data.raw.recipe[value])
-	if recipe ~= nil then
-		if recipe.normal ~= nil then
-			if recipe.normal.result ~= nil then
-				if recipe.normal.result == ingredient then
-					data.raw.recipe[value].normal.result = nil 
-					print = print .. "  " .. ingredient .. "Removed from " .. value .. ".(Normal)\n"
+	local original_recipe = data.raw.recipe[value]
+	local new_recipe = table.deepcopy(original_recipe)
+	if new_recipe ~= nil then
+		if new_recipe.normal ~= nil then
+			if new_recipe.normal.result ~= nil then
+				if new_recipe.normal.result == target_ingredient then
+					original_recipe.normal.result = nil
+					print = print .. "  " .. target_ingredient .. "Removed from " .. value .. ".(Normal)\n"
 				end
-				if recipe.expensive.result == ingredient then
-					data.raw.recipe[value].expensive.result = nil 
-					print = print .. "  " .. ingredient .. "Removed from " .. value .. ".(Expensive)\n"
+				if new_recipe.expensive.result == target_ingredient then
+					original_recipe.expensive.result = nil
+					print = print .. "  " .. target_ingredient .. "Removed from " .. value .. ".(Expensive)\n"
 				end
 			else
-				local results_normal = recipe.normal.results
-				for x,ing in ipairs(result_normal) do
-					if results_normal[x][1] == ingredient or results_normal[x]["name"] == ingredient then
-						--ingredients_normal[x] = nil
-						table.remove (results_normal, x)
+				local results_normal = new_recipe.normal.results
+				for i=1, #results_normal do
+					local ingredient = results_normal[i]
+					if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
+						--ingredients_normal[i] = nil
+						tremove(results_normal, i)
 					end
 				end
 				data.raw.recipe[value].normal.results = results_normal
-				print = print .. "  " .. ingredient .. "Removed from " .. value .. ".(Normal)\n"
-				local results_expensive = recipe.expensive.ingredients
-				for x,ing in ipairs(ingredients_expensive) do
-					if results_expensive[x][1] == ingredient or results_expensive[x]["name"] == ingredient then
+				print = print .. "  " .. target_ingredient .. "Removed from " .. value .. ".(Normal)\n"
+				local results_expensive = new_recipe.expensive.ingredients
+				for i=1, #results_expensive do
+					local ingredient = results_expensive[i]
+					if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
 						--ingredients_expensive[x] = nil
-						table.remove (results_expensive, x)	
+						tremove(results_expensive, i)
 					end
 				end
 				data.raw.recipe[value].expensive.results = results_expensive
-				print = print .. "  " .. ingredient .. "Removed from " .. value .. ".(Expensive)\n"
+				print = print .. "  " .. target_ingredient .. "Removed from " .. value .. ".(Expensive)\n"
 			end
 		else
-			if recipe.result == ingredient then
-				data.raw.recipe[value].result = nil 
-				print = print .. "  " .. ingredient .. "Removed from " .. value .. ".\n"
+			if new_recipe.result == target_ingredient then
+				data.raw.recipe[value].result = nil
+				print = print .. "  " .. target_ingredient .. "Removed from " .. value .. ".\n"
 			else
-				local results = recipe.results
-				for x,ing in ipairs(results) do
-					if results[x][1] == ingredient or results[x]["name"] == ingredient then
+				local results = new_recipe.results
+				for i=1, #results do
+					local ingredient = results[i]
+					if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
 						--ingredients[x] = nil
-						table.remove (results, x)
+						tremove(results, i)
 					end
 				end
 				data.raw.recipe[value].results = results
-				print = print .. "  " .. ingredient .. "Removed from " .. value .. ".\n"
+				print = print .. "  " .. target_ingredient .. "Removed from " .. value .. ".\n"
 			end
 		end
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "---------------------------------------------------------------------------------------------")
 		end
 	else
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  [Warning] Recipe with name " .. value .. " not found\n---------------------------------------------------------------------------------------------")
 		else
 			log("  [Warning] Recipe with name " .. value .. " not found")
@@ -276,54 +292,56 @@ function ezlib.recipe.add.result (value, fingredient, famount, ftype)
 		ftype = "item"
 		print = print .. "  Type is item\n"
 	end
-	local recipe = table.deepcopy(data.raw.recipe[value])
-	if recipe ~= nil then
-		if recipe.normal ~= nil then
-			if recipe.normal.results == nil then
+	local original_item = data.raw.item[value]
+	local original_recipe = data.raw.recipe[value]
+	local new_recipe = table.deepcopy(original_recipe)
+	if new_recipe ~= nil then
+		if new_recipe.normal ~= nil then
+			if new_recipe.normal.results == nil then
 				print = print .. "  Recipe " .. value .. " have no results... adding\n"
-				recipe.normal.results = {}
-				recipe.expensive.results = {}
-				data.raw.recipe[value].normal.result = nil
-				data.raw.recipe[value].expensive.result = nil
-				data.raw.recipe[value].icon = data.raw.item[value].icon
-				data.raw.recipe[value].icon_size = data.raw.item[value].icon_size
-				data.raw.recipe[value].subgroup = data.raw.item[value].subgroup
+				new_recipe.normal.results = {}
+				new_recipe.expensive.results = {}
+				original_recipe.normal.result = nil
+				original_recipe.expensive.result = nil
+				original_recipe.icon = original_item.icon
+				original_recipe.icon_size = original_item.icon_size
+				original_recipe.subgroup = original_item.subgroup
 				--if recipe.normal.result_count == nil then recipe.normal.result_count = 1 end
 				--if recipe.expensive.result_count == nil then recipe.expensive.result_count = 1 end
-				if recipe.normal.result ~= nil then
-					table.insert(recipe.normal.results, {type="item", name=recipe.normal.result, amount=recipe.normal.result_count or 1})
+				if new_recipe.normal.result ~= nil then
+					table.insert(new_recipe.normal.results, {type="item", name=new_recipe.normal.result, amount=new_recipe.normal.result_count or 1})
 				end
-				if recipe.expensive.result ~= nil then
-					table.insert(recipe.expensive.results, {type="item", name=recipe.expensive.result, amount=recipe.expensive.result_count or 1})
+				if new_recipe.expensive.result ~= nil then
+					table.insert(new_recipe.expensive.results, {type="item", name=new_recipe.expensive.result, amount=new_recipe.expensive.result_count or 1})
 				end
 			end
-			table.insert(recipe.normal.results, {type=ftype, name=fingredient, amount=famount})
-			table.insert(recipe.expensive.results, {type=ftype, name=fingredient, amount=famount})
-			data.raw.recipe[value].normal.results = recipe.normal.results
-			data.raw.recipe[value].expensive.results = recipe.expensive.results
+			table.insert(new_recipe.normal.results, {type=ftype, name=fingredient, amount=famount})
+			table.insert(new_recipe.expensive.results, {type=ftype, name=fingredient, amount=famount})
+			original_recipe.normal.results = new_recipe.normal.results
+			original_recipe.expensive.results = new_recipe.expensive.results
 			print = print .. "  " .. famount .. "x" .. fingredient .. "added to " .. value .. "(normal and expensive).\n"
 		else
-			if recipe.results == nil then
-				recipe.results = {}
-				data.raw.recipe[value].result = nil
-				data.raw.recipe[value].icon = data.raw.item[value].icon
-				data.raw.recipe[value].icon_size = data.raw.item[value].icon_size
-				data.raw.recipe[value].subgroup = data.raw.item[value].subgroup
-				if recipe.result ~= nil then
+			if new_recipe.results == nil then
+				new_recipe.results = {}
+				original_recipe.result = nil
+				original_recipe.icon = original_item.icon
+				original_recipe.icon_size = original_item.icon_size
+				original_recipe.subgroup = original_item.subgroup
+				if new_recipe.result ~= nil then
 					print = print .. "  Recipe " .. value .. " have no results... adding\n"
-					table.insert(recipe.results, {type="item", name=recipe.result, amount=recipe.result_count or 1})
+					table.insert(new_recipe.results, {type="item", name=new_recipe.result, amount=new_recipe.result_count or 1})
 				end
 			end
-			if recipe.category == nil and ftype == "fluid" then data.raw.recipe[value].category = "crafting-with-fluid" end
-			table.insert(recipe.results, {type=ftype, name=fingredient, amount=famount})
-			data.raw.recipe[value].results = recipe.results
+			if new_recipe.category == nil and ftype == "fluid" then original_recipe.category = "crafting-with-fluid" end
+			table.insert(new_recipe.results, {type=ftype, name=fingredient, amount=famount})
+			original_recipe.results = new_recipe.results
 			print = print .. "  " .. famount .. "x" .. fingredient .. "added to " .. value .. ".\n"
 		end
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "---------------------------------------------------------------------------------------------")
 		end
 	else
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  [Warning] Recipe with name " .. value .. " not found\n---------------------------------------------------------------------------------------------")
 		else
 			log("  [Warning] Recipe with name " .. value .. " not found")
@@ -396,66 +414,69 @@ function ezlib.recipe.get.result (value)
 		if recipe.normal ~= nil then
 			if difficulty == 1 or recipe.expensive == nil then
 				if recipe.normal.result ~= nil then
-					table.insert(ingredients, {recipe.normal.result, recipe.normal.result_count or 1})
+					ingredients[#ingredients+1] = {recipe.normal.result, recipe.normal.result_count or 1}
 				else
 					ingredients = recipe.normal.results
 				end
 			else
 				if recipe.expensive.result ~= nil then
-					table.insert(ingredients, {recipe.expensive.result, recipe.expensive.result_count or 1})
+					ingredients[#ingredients+1] = {recipe.expensive.result, recipe.expensive.result_count or 1}
 				else
 					ingredients = recipe.expensive.results
 				end
 			end
 		else
 			if recipe.result ~= nil then
-				table.insert(ingredients, {recipe.result, recipe.result_count or 1})
+				ingredients[#ingredients+1] = {recipe.result, recipe.result_count or 1}
 			else
 				ingredients = recipe.results
 			end
 		end
 		if ftype == 0 then
-			for x,ing in ipairs(ingredients) do
-				if ingredients[x]["type"] == nil then
-					table.insert(out, {type="item", name=ingredients[x][1], amount=ingredients[x][2]})
+			for i=1, #ingredients do
+				local ingredient = ingredients[i]
+				if ingredient["type"] == nil then
+					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
-					table.insert(out, {type=ingredients[x]["type"], name=ingredients[x]["name"], amount=ingredients[x]["amount"]})
+					out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 				end
 			end
 		end
 		if ftype == 1 then
-			for x,ing in ipairs(ingredients) do
-				if ingredients[x]["type"] == nil then
-					table.insert(out, {type="item", name=ingredients[x][1], amount=ingredients[x][2]})
+			for i=1, #ingredients do
+				local ingredient = ingredients[i]
+				if ingredient["type"] == nil then
+					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
-					if ingredients[x]["type"] == "item" then
-						table.insert(out, {type=ingredients[x]["type"], name=ingredients[x]["name"], amount=ingredients[x]["amount"]})
+					if ingredient["type"] == "item" then
+						out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 					end
 				end
 			end
 		end
 		if ftype == 2 then
-			for x,ing in ipairs(ingredients) do
-				if ingredients[x]["type"] == "fluid" then
-					table.insert(out, {type=ingredients[x]["type"], name=ingredients[x]["name"], amount=ingredients[x]["amount"]})
+			for i=1, #ingredients do
+				local ingredient = ingredients[i]
+				if ingredient["type"] == "fluid" then
+					out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 				end
 			end
 		end
 		if fingredient ~= 1 then
-			for x,ing in ipairs(out) do
-				if out[x]["name"] == fingredient then
-					if ezlib.debug then
+			for _,ing in ipairs(out) do
+				if ing["name"] == fingredient then
+					if ezlib.debug_self then
 						log(print .. "  Renurning false\n---------------------------------------------------------------------------------------------")
 					end
 					return true
 				end
 			end
-			if ezlib.debug then
+			if ezlib.debug_self then
 				log(print .. "  Renurning false\n---------------------------------------------------------------------------------------------")
 			end
 			return false
 		else
-			if ezlib.debug then
+			if ezlib.debug_self then
 				log(print .. "  Renurning:" .. ezlib.log.print(out, 0) .. "\n---------------------------------------------------------------------------------------------")
 			end
 			return out
@@ -472,7 +493,7 @@ function ezlib.recipe.find.ingredient (value)
 	for x,ing in pairs(recipe) do
 		if ezlib.recipe.ingredient.get({recipe_name = recipe[x].name, ingredient = value}) then
 			table.insert(list, recipe[x].name)
-		end 
+		end
 	end
 	if #list == 1 then
 		list = list[1]
@@ -492,12 +513,12 @@ end
 
 function ezlib.recipe.find.result (value)
 	local print = "ezlib.recipe.find.result\n---------------------------------------------------------------------------------------------\n"
-	local recipe = data.raw.recipe
+	local recipes = data.raw.recipe -- TODO: refactor
 	local list = {}
-	for x,ing in pairs(recipe) do
-		if ezlib.recipe.result.get({recipe_name = recipe[x].name, ingredient = value}) then
-			table.insert(list, recipe[x].name)
-		end 
+	for _,recipe in pairs(recipes) do
+		if ezlib.recipe.result.get({recipe_name = recipe.name, ingredient = value}) then
+			list[#list+1] = recipe.name
+		end
 	end
 	if #list == 1 then
 		list = list[1]
@@ -517,33 +538,37 @@ end
 
 function ezlib.recipe.get.list (value)
 	local freturn = 0
-	local recipe = data.raw.recipe
+	local recipe = data.raw.recipe -- TODO: refactor
 	local list = {}
 	local del_list = {}
 	if recipe ~= nil then
-		for x,ing in pairs(recipe) do
-			table.insert(list, recipe[x].name)
+		for _, _recipe in pairs(recipe) do
+			list[#list+1] = _recipe.name
 		end
 	end
 	if value ~= nil and type(value) == "table" then
-		for a,ing in pairs(value) do
-			if value[a] ~= nil then
-				if type(value[a]) == "string" then
+		for a, ing in pairs(value) do
+			if ing ~= nil then
+				if type(ing) == "string" then
 					for x,ing2 in ipairs(list) do
-						if recipe[list[x]][a] ~= value[a] or recipe[list[x]][a] == nil then
+						if recipe[list[x]][a] ~= ing or recipe[list[x]][a] == nil then
 							table.insert(del_list, ing2)
 						end
 					end
-				elseif type(value[a]) == "table" then
-					for b,ing3 in pairs(value[a]) do
-						if type(value[a][b]) == "string" then
-							for c,ing2 in ipairs(list) do
-								if recipe[list[x]][a][b] ~= value[a][b]  or recipe[list[x]][a][b] == nil then
-									table.insert(del_list, ing2)
+				elseif type(ing) == "table" then
+					local entities = ing
+					for b in pairs(entities) do
+						local entity = entities[b]
+						if type(entity) == "string" then
+							for i,ing2 in ipairs(list) do
+								-- TODO: check
+								local v = recipe[list[i]][a][b]
+								if v ~= entity or v == nil then
+									del_list[#del_list+1] = ing2
 								end
 							end
-						elseif type(value[a][b]) == "table" then
-							log("You can't mine so deap")	
+						elseif type(entity) == "table" then
+							log("You can't mine so deap")
 						else
 							break
 						end
@@ -565,7 +590,7 @@ function ezlib.recipe.get.list (value)
 			freturn = 1
 		end
 	end
-	if ezlib.debug then	
+	if ezlib.debug_self then
 		local print = ""
 		print = print .. "ezlib.recipes.get.list\n---------------------------------------------------------------------------------------------\n"
 		if type(list) == "table" then
@@ -575,17 +600,13 @@ function ezlib.recipe.get.list (value)
 		else
 			print = print .. "  [Warning] Found 0 recipes in type."
 		end
-		if type(list) == "table" then
-			print = print .. "\n  List of recipes:"
-			print = print .. ezlib.log.print(list, 0)
-		end
 		if type(value) == "table" then
 			print = print .. "\n  List of filters:"
 			print = print .. ezlib.log.print(value, 0)
 		end
 		log(print .. "\n---------------------------------------------------------------------------------------------")
 	end
-	if freturn == 0 then 
+	if freturn == 0 then
 		return nil
 	else
 		return list

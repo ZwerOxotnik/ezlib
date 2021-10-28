@@ -1,8 +1,74 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.5
+Date: 28.10.2021
+  Changes:
+    - Optimized
+    - Refactored (I'm not done, so much stuff etc)
+    - Fixed some bugs
+  Notes:
+    - This version was updated for Factorio 1.1 by ZwerOxotnik
+---------------------------------------------------------------------------------------------------
+Version: 0.1.4
+Date: 26.04.2021
+  Changes:
+    - Optimized images
+    - Fixed and refactored some code
+    - Works properly with icon_mipmaps now
+  Notes:
+    - This version was updated for Factorio 1.1 by ZwerOxotnik
+    - I'll change/update GitHub repository later (remind me though)
+---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 16.08.2020
+  New:
+    - 1.0 - factorio Version
+---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: 27.01.2020
+  New:
+    - 0.18 - factorio Version (not tested)
+---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 25.07.2019
+  Improvements:
+    - function ezlib.log.print
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 26.02.2019
+  New:
+    - 0.17 - not tested
+---------------------------------------------------------------------------------------------------
+Version: 0.0.15
+Date: 16.02.2019
+  New:
+    - thumbnail
+---------------------------------------------------------------------------------------------------
+Version: 0.0.14
+Date: 7.02.2019
+  Improvements:
+    - Log print
+  Bugfixes:
+    - Bug fix
+---------------------------------------------------------------------------------------------------
+Version: 0.0.13
+Date: ?.02.2019
+  New:
+    - DeBug self
+---------------------------------------------------------------------------------------------------
+Version: 0.0.12
+Date: 16.12.2018
+  Bugfixes:
+    - Some bug fixes 
+---------------------------------------------------------------------------------------------------
+Version: 0.0.11
+Date: 16.12.2018
+  New:
+    - Green screen/chroma key
+---------------------------------------------------------------------------------------------------
 Version: 0.0.10
 Date: 16.12.2018
   New:
-    - table ezlib.item.not_item is all items types (Ex. gun)
+    - table ezlib.item.not_item is all items types (Ex. gun or tool)
     - Changelog in game
   Improvements:
     - function ezlib.item.get.list have not_items type

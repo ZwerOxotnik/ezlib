@@ -1,33 +1,36 @@
-function ezlib.entity.get.list (ftype,value)
+local tremove = table.remove
+
+function ezlib.entity.get.list(ftype, value)
 	local freturn = 0
 	local list = {}
 	if ftype ~= nil then
-		local entity = data.raw[ftype]
+		local entities = data.raw[ftype]
 		local del_list = {}
-		if entity ~= nil then
-			for k,ing in pairs(entity) do
-				table.insert(list, entity[k].name)
+		if entities ~= nil then
+			for i=1, #entities do
+				list[#list+1] = entities[i].name
 			end
 		end
 		if value ~= nil and type(value) == "table" and list ~= nil then
-			for a,ing in pairs(value) do
+			for a in pairs(value) do
 				if value[a] ~= nil then
 					if type(value[a]) == "string" then
-						for x,ing2 in ipairs(list) do
-							if entity[list[x]][a] ~= value[a] or entity[list[x]][a] == nil then
-								table.insert(del_list, ing2)
+						for x, ing2 in ipairs(list) do
+							if entities[list[x]][a] ~= value[a] or entities[list[x]][a] == nil then
+								del_list[#del_list+1] = ing2
 							end
 						end
 					elseif type(value[a]) == "table" then
-						for b,ing3 in pairs(value[a]) do
+						for b,_ in pairs(value[a]) do
 							if type(value[a][b]) == "string" then
-								for c,ing2 in ipairs(list) do
-									if entity[list[x]][a][b] ~= value[a][b]  or entity[list[x]][a][b] == nil then
-										table.insert(del_list, ing2)
+								for x, ing2 in ipairs(list) do
+									-- Does this work?
+									if entities[list[x]][a][b] ~= value[a][b]  or entities[list[x]][a][b] == nil then
+										del_list[#del_list+1] = ing2
 									end
 								end
 							elseif type(value[a][b]) == "table" then
-								log("You can't mine so deap")	
+								log("You can't mine so deap")
 							else
 								break
 							end
@@ -50,7 +53,7 @@ function ezlib.entity.get.list (ftype,value)
 			end
 		end
 	end
-	if ezlib.debug then	
+	if ezlib.debug_self then
 		local print = ""
 		print = print .. "ezlib.entity.get.list\n---------------------------------------------------------------------------------------------\n"
 		if ftype == nil then
@@ -62,10 +65,6 @@ function ezlib.entity.get.list (ftype,value)
 				print = print .. "  Found entity " .. list .. " in type " .. ftype .. "."
 			else
 				print = print .. "  [Warning] Found 0 entities in type " .. ftype .. "."
-			end
-			if type(list) == "table" then
-				print = print .. "\n  List of entities:"
-				print = print .. ezlib.log.print(list, 0)
 			end
 			if type(value) == "table" then
 				print = print .. "\n  List of filters:"
@@ -81,19 +80,21 @@ function ezlib.entity.get.list (ftype,value)
 	end
 end
 
-function ezlib.entity.add.flag (value, type, flag)
+function ezlib.entity.add.flag(value, type, flag)
 	local print = "ezlib.entity.add.flag\n---------------------------------------------------------------------------------------------\n"
-	if data.raw[type][value] then
-		if data.raw[type][value].flags then
-			table.insert(data.raw[type][value].flags, flag)
+	local entity = data.raw[type][value]
+	if entity then
+		local flags = entity.flags
+		if flags then
+			flags[#flags+1] = flag
 		else
-			data.raw[type][value].flags = flag
+			entity.flags = flag
 		end
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  Flag " .. flag .. " added to " .. value .. ".\n---------------------------------------------------------------------------------------------")
 		end
 	else
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  [Warning] Entity with name " .. value .. " not found.\n---------------------------------------------------------------------------------------------")
 		else
 			log("  [Warning] Entity with name " .. value .. " not found.")
@@ -101,21 +102,24 @@ function ezlib.entity.add.flag (value, type, flag)
 	end
 end
 
-function ezlib.entity.remove.flag (value, type, flag)
+function ezlib.entity.remove.flag(value, type, flag)
 	local print = "ezlib.entity.remove.flag\n---------------------------------------------------------------------------------------------\n"
-	if data.raw[type][value] then
-		if data.raw[type][value].flags then
-			for i,v in ipairs(data.raw[type][value].flags) do
-				if data.raw[type][value].flags[i] == v then
-					table.remove(data.raw[type][value].flags, i)
+	local entity = data.raw[type][value]
+	if entity then
+		local flags = entity.flags
+		if flags then
+			for i=1, #flags do
+				-- TODO: check
+				if flags[i] == flag then
+					tremove(flags, i)
 				end
 			end
 		end
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  Flag " .. flag .. " removed from " .. value .. ".\n---------------------------------------------------------------------------------------------")
 		end
 	else
-		if ezlib.debug then
+		if ezlib.debug_self then
 			log(print .. "  [Warning] Entity with name " .. value .. " not found.\n---------------------------------------------------------------------------------------------")
 		else
 			log("  [Warning] Entity with name " .. value .. " not found.")

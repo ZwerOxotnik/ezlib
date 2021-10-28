@@ -1,15 +1,17 @@
 ezlib = {}
-ezlib.debug = settings.startup["ez-debug"].value
-list1 = {"item","entity","recipe","tech","log","string","hidden","tbl"}
-list2 = {"add","replace","remove","find","get"}
-for x,ing in pairs(list1) do
+ezlib.debug_self = settings.startup["ez-debug"].value
+ezlib.debug = settings.startup["ez-debug_other_mods"].value
+local list1 = {"item", "entity", "recipe", "tech", "log", "string", "hidden", "tbl"}
+local list2 = {"add", "replace", "remove", "find", "get"}
+for _,ing in pairs(list1) do
 	if not ezlib[ing] then
 		ezlib[ing] = {}
 	end
-	for y,ing2 in pairs(list2) do
-		if not ezlib[ing][ing2] then
-			ezlib[ing][ing2] = {}
+	local ings = ezlib[ing]
+	for _,ing2 in pairs(list2) do
+		if not ings[ing2] then
+			ings[ing2] = {}
 		end
 	end
 end
-ezlib.item.not_item = {"gun", "mining-tool", "tool", "selection-tool", "blueprint", "blueprint-book", "deconstruction-item", "item-with-entity-data", "rail-planner", "item", "capsule", "module", "ammo", "armor", "repair-tool"}
+ezlib.item.not_item = {"gun", "mining-tool", "tool", "selection-tool", "item-with-tags", "item-with-label", "item-with-inventory", "blueprint", "blueprint-book", "deconstruction-item", "item-with-entity-data", "rail-planner", "item", "capsule", "module", "ammo", "armor", "repair-tool", "spidertron-remote"}
