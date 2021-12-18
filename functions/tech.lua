@@ -1,10 +1,12 @@
 local tremove = table.remove
+local tinsert = table.insert
+local technologies = data.raw.technology
 
 function ezlib.tech.add.unlock_recipe (value, frecipe)
 	local print = "ezlib.tech.add.unlock_recipe\n---------------------------------------------------------------------------------------------\n"
-	local technology = data.raw.technology[value]
+	local technology = technologies[value]
 	if technology then
-		table.insert(technology.effects, {type = "unlock-recipe", recipe = frecipe})
+		tinsert(technology.effects, {type = "unlock-recipe", recipe = frecipe})
 		if ezlib.debug_self then
 			log(print .. "  Recipe " .. frecipe .. " added to technology " .. value .. "\n---------------------------------------------------------------------------------------------")
 		end
@@ -19,15 +21,15 @@ end
 
 function ezlib.tech.add.unlock_modifer(value, ftype, fmodifier, fammo_category)
 	local print = "ezlib.tech.add.unlock_modifer\n---------------------------------------------------------------------------------------------\n"
-	local technology = data.raw.technology[value]
+	local technology = technologies[value]
 	if technology then -- TODO: check
 		if ftype == "ammo-damage" or ftype == "gun-speed" then
-			table.insert(technology.effects, {type = ftype, ammo_category = fammo_category, modifier = fmodifier})
+			tinsert(technology.effects, {type = ftype, ammo_category = fammo_category, modifier = fmodifier})
 			if ezlib.debug_self then
 				log(print .. "  Effect " .. ftype .. " with modifier " .. fmodifier .. " for ammo category " .. fammo_category .. " added to technology " .. value .. "\n---------------------------------------------------------------------------------------------")
 			end
 		else
-			table.insert(technology.effects, {type = ftype, modifier = fmodifier})
+			tinsert(technology.effects, {type = ftype, modifier = fmodifier})
 			if ezlib.debug_self then
 				log(print .. "  Effect " .. ftype .. " with modifier " .. fmodifier .. " added to technology " .. value .. "\n---------------------------------------------------------------------------------------------")
 			end
@@ -43,9 +45,9 @@ end
 
 function ezlib.tech.add.prerequisites (value, ftech)
 	local print = "ezlib.tech.add.prerequisites\n---------------------------------------------------------------------------------------------\n"
-	local technology = data.raw.technology[value]
-	if technology and data.raw.technology[ftech] then
-		table.insert(technology.prerequisites, ftech)
+	local technology = technologies[value]
+	if technology and technologies[ftech] then
+		tinsert(technology.prerequisites, ftech)
 		if ezlib.debug_self then
 			log(print .. "  Prerequisites " .. ftech .. " added to technology " .. value .. "\n---------------------------------------------------------------------------------------------")
 		end
@@ -60,7 +62,7 @@ end
 
 
 function ezlib.tech.find.unlock_recipe(value)
-	local techs = data.raw.technology -- TODO: refactor
+	local techs = technologies -- TODO: refactor
 	local list = {}
 	for _, tech in pairs(techs) do
 		if tech.effects ~= nil then
@@ -92,7 +94,7 @@ end
 
 function ezlib.tech.find.unlock_modifer(value, fmodifier)
 	local print = "ezlib.tech.find.unlock_modifer\n---------------------------------------------------------------------------------------------\n"
-	local techs = data.raw.technology -- TODO: refactor
+	local techs = technologies -- TODO: refactor
 	local list = {}
 	for _, tech in pairs(techs) do
 		if tech.effects ~= nil then
@@ -124,7 +126,7 @@ end
 
 function ezlib.tech.remove.unlock_recipe (value, frecipe)
 	local print = "ezlib.tech.remove.unlock_recipe\n---------------------------------------------------------------------------------------------"
-	local technology = data.raw.technology[value]
+	local technology = technologies[value]
 	if technology then
 		for y, effect in ipairs(technology.effects) do
 			if effect.type == "unlock-recipe" then
@@ -148,7 +150,7 @@ end
 
 function ezlib.tech.remove.unlock_modifer(value, ftype, fammo_category)
 	local print = "ezlib.tech.remove.unlock_modifer\n---------------------------------------------------------------------------------------------\n"
-	local technology = data.raw.technology[value]
+	local technology = technologies[value]
 	if technology then
 		local effects = technology.effects
 		for y in ipairs(effects) do -- TODO: check this
@@ -178,8 +180,8 @@ end
 
 function ezlib.tech.remove.prerequisites(value, ftech)
 	local print = "ezlib.tech.remove.prerequisites\n---------------------------------------------------------------------------------------------\n"
-	local technology = data.raw.technology[value]
-	if technology and data.raw.technology[ftech] then
+	local technology = technologies[value]
+	if technology and technologies[ftech] then
 		local prerequisites = technology.prerequisites
 		for y, prerequisity in ipairs(prerequisites) do
 			if prerequisity == ftech then
@@ -201,7 +203,7 @@ end
 
 function ezlib.tech.get.list(value)
 	local freturn = 0
-	local techs = data.raw.technology -- TODO: refactor
+	local techs = technologies -- TODO: refactor
 	local del_list = {}
 	local list = {}
 	for _, tech in pairs(techs) do

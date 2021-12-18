@@ -108,7 +108,7 @@ function ezlib.entity.remove.flag(value, type, flag)
 	if entity then
 		local flags = entity.flags
 		if flags then
-			for i=1, #flags do
+			for i=#flags, 1, -1 do
 				-- TODO: check
 				if flags[i] == flag then
 					tremove(flags, i)
