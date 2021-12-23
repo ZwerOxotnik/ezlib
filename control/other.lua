@@ -1,4 +1,5 @@
 local tremove = table.remove
+local tinsert = table.insert
 
 local function log_print(tbl, indent)
 	local freturn = 1
@@ -87,11 +88,11 @@ remote.add_interface("ezlib",{
 	local print = "ezlib.tbl.remove\n---------------------------------------------------------------------------------------------\n"
 	if list2 ~= nil then
 		local list3 = {}
-		for x,ing in ipairs(list1) do
-			table.insert(list3, ing)
+		for _, ing in pairs(list1) do
+			tinsert(list3, ing)
 		end
 		local z = 0
-		for x,ing in ipairs(list1) do
+		for x, ing in pairs(list1) do
 			if type(list2) == "table" then
 				for y,ing2 in pairs(list2) do
 					if ing == ing2 then
@@ -130,51 +131,51 @@ remote.add_interface("ezlib",{
 	local print = "ezlib.tbl.add\n---------------------------------------------------------------------------------------------\n"
 	if list1 ~= nil and type(list1) == "table" then
 		for y,ing in pairs(list1) do
-			table.insert(list, ing)
+			tinsert(list, ing)
 		end
 		print = print .. "	Table_1 added as table\n"
 	elseif type(list1) == "string" then
-		table.insert(list, list1)
+		tinsert(list, list1)
 		print = print .. "	Table_1 added as string\n"
 	end
 
 	if list2 ~= nil and type(list2) == "table" then
 		for y,ing in pairs(list2) do
-			table.insert(list, ing)
+			tinsert(list, ing)
 		end
 		print = print .. "	Table_2 added as table\n"
 	elseif type(list2) == "string" then
-		table.insert(list, list2)
+		tinsert(list, list2)
 		print = print .. "	Table_2 added as string\n"
 	end
 
 	if list3 ~= nil and type(list3) == "table" then
 		for y,ing in pairs(list3) do
-			table.insert(list, ing)
+			tinsert(list, ing)
 		end
 		print = print .. "	Table_3 added as table\n"
 	elseif type(list3) == "string" then
-		table.insert(list, list3)
+		tinsert(list, list3)
 		print = print .. "	Table_3 added as string\n"
 	end
 
 	if list4 ~= nil and type(list4) == "table" then
 		for y,ing in pairs(list4) do
-			table.insert(list, ing)
+			tinsert(list, ing)
 		end
 		print = print .. "	Table_4 added as table\n"
 	elseif type(list4) == "string" then
-		table.insert(list, list4)
+		tinsert(list, list4)
 		print = print .. "	Table_4 added as string\n"
 	end
 
 	if list5 ~= nil and type(list5) == "table" then
 		for y,ing in pairs(list5) do
-			table.insert(list, ing)
+			tinsert(list, ing)
 		end
 		print = print .. "	Table_5 added as table\n"
 	elseif type(list5) == "string" then
-		table.insert(list, list5)
+		tinsert(list, list5)
 		print = print .. "	Table_5 added as string\n"
 	end
 	if ezlib.debug_self_self then

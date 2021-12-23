@@ -7,15 +7,15 @@ function ezlib.entity.get.list(ftype, value)
 		local entities = data.raw[ftype]
 		local del_list = {}
 		if entities ~= nil then
-			for i=1, #entities do
-				list[#list+1] = entities[i].name
+			for _, prototype in pairs(entities) do
+				list[#list+1] = prototype.name
 			end
 		end
 		if value ~= nil and type(value) == "table" and list ~= nil then
 			for a in pairs(value) do
 				if value[a] ~= nil then
 					if type(value[a]) == "string" then
-						for x, ing2 in ipairs(list) do
+						for x, ing2 in pairs(list) do
 							if entities[list[x]][a] ~= value[a] or entities[list[x]][a] == nil then
 								del_list[#del_list+1] = ing2
 							end
@@ -23,7 +23,7 @@ function ezlib.entity.get.list(ftype, value)
 					elseif type(value[a]) == "table" then
 						for b,_ in pairs(value[a]) do
 							if type(value[a][b]) == "string" then
-								for x, ing2 in ipairs(list) do
+								for x, ing2 in pairs(list) do
 									-- Does this work?
 									if entities[list[x]][a][b] ~= value[a][b]  or entities[list[x]][a][b] == nil then
 										del_list[#del_list+1] = ing2

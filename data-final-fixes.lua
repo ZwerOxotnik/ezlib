@@ -1,4 +1,4 @@
 local items = ezlib.item.get.list()
-for x,y in ipairs(items) do
-	ezlib.remove("item", y)
+for _, v in pairs(items) do
+	ezlib.remove("item", v)
 end

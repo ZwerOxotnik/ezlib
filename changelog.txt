@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.7
+Date: 18.12.2021
+  Changes:
+    - Improved stability
+    - Refactored slightly
+  Notes:
+    - This version was updated for Factorio 1.1 by ZwerOxotnik
+---------------------------------------------------------------------------------------------------
 Version: 0.1.6
 Date: 18.12.2021
   Changes:

@@ -66,7 +66,7 @@ function ezlib.tech.find.unlock_recipe(value)
 	local list = {}
 	for _, tech in pairs(techs) do
 		if tech.effects ~= nil then
-			for _, effect in ipairs(tech.effects) do
+			for _, effect in pairs(tech.effects) do
 				if effect.type == "unlock-recipe" then
 					if effect.recipe == value then
 						list[#list+1] = techs.name
@@ -98,7 +98,7 @@ function ezlib.tech.find.unlock_modifer(value, fmodifier)
 	local list = {}
 	for _, tech in pairs(techs) do
 		if tech.effects ~= nil then
-			for _, effect in ipairs(tech.effects) do
+			for _, effect in pairs(tech.effects) do
 				if effect.type == value then
 					if effect.modifier == fmodifier or fmodifier == nil then
 						list[#list+1] = tech.name
@@ -128,7 +128,7 @@ function ezlib.tech.remove.unlock_recipe (value, frecipe)
 	local print = "ezlib.tech.remove.unlock_recipe\n---------------------------------------------------------------------------------------------"
 	local technology = technologies[value]
 	if technology then
-		for y, effect in ipairs(technology.effects) do
+		for y, effect in pairs(technology.effects) do
 			if effect.type == "unlock-recipe" then
 				if effect.recipe == frecipe then
 					tremove(technology.effects, y)
@@ -153,15 +153,15 @@ function ezlib.tech.remove.unlock_modifer(value, ftype, fammo_category)
 	local technology = technologies[value]
 	if technology then
 		local effects = technology.effects
-		for y in ipairs(effects) do -- TODO: check this
+		for i in pairs(effects) do -- TODO: check this
 			if fammo_category ~= nil then
 				if effects.ammo_category == fammo_category and effects.type == ftype then
-					tremove(effects, y)
+					tremove(effects, i)
 					print = print .. "\n  Effect " .. ftype .. " removed from technology " .. value
 				end
 			else
 				if effects.type == ftype then
-					tremove(effects, y)
+					tremove(effects, i)
 					print = print .. "\n  Effect " .. ftype .. " removed from technology " .. value
 				end
 			end
@@ -183,9 +183,9 @@ function ezlib.tech.remove.prerequisites(value, ftech)
 	local technology = technologies[value]
 	if technology and technologies[ftech] then
 		local prerequisites = technology.prerequisites
-		for y, prerequisity in ipairs(prerequisites) do
+		for i, prerequisity in pairs(prerequisites) do
 			if prerequisity == ftech then
-				tremove(prerequisites, y)
+				tremove(prerequisites, i)
 				print = print .. "\n  Prerequisites " .. ftech .. " removed from technology " .. value
 			end
 		end
@@ -213,7 +213,7 @@ function ezlib.tech.get.list(value)
 		for a,ing in pairs(value) do
 			if value[a] ~= nil then
 				if type(ing) == "string" then
-					for x,ing2 in ipairs(list) do
+					for x, ing2 in pairs(list) do
 						local v = techs[list[x]][a]
 						if v ~= ing or v == nil then
 							del_list[#del_list+1] = ing2
@@ -223,7 +223,7 @@ function ezlib.tech.get.list(value)
 					for b in pairs(ing) do
 						if type(ing[b]) == "string" then
 							-- TODO: check x etc
-							for x,ing2 in ipairs(list) do
+							for x, ing2 in pairs(list) do
 								local v = techs[list[x]][a][b]
 								if v ~= ing[b] or v == nil then
 									del_list[#del_list+1] = ing2

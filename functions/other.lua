@@ -54,11 +54,11 @@ function ezlib.tbl.remove(list1, list2)
 	if list1 ~= nil then
 		if list2 ~= nil then
 			local list3 = {}
-			for _,ing in ipairs(list1) do
+			for _, ing in pairs(list1) do
 				list3[#list3+1] = ing
 			end
 			local z = 0
-			for x,ing in ipairs(list1) do
+			for x, ing in pairs(list1) do
 				if type(list2) == "table" then
 					for _,ing2 in pairs(list2) do
 						if ing == ing2 then

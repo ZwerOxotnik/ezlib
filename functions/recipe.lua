@@ -172,8 +172,7 @@ function ezlib.recipe.get.ingredient (value)
 			ingredients = recipe.ingredients
 		end
 		if ftype == 0 then
-			for i=1, #ingredients do
-				local ingredient = ingredients[i]
+			for _, ingredient in pairs(ingredients) do
 				if ingredient["type"] == nil then
 					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
@@ -182,8 +181,7 @@ function ezlib.recipe.get.ingredient (value)
 			end
 		end
 		if ftype == 1 then
-			for i=1, #ingredients do
-				local ingredient = ingredients[i]
+			for _, ingredient in pairs(ingredients) do
 				if ingredient["type"] == nil then
 					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
@@ -194,8 +192,7 @@ function ezlib.recipe.get.ingredient (value)
 			end
 		end
 		if ftype == 2 then
-			for i=1, #ingredients do
-				local ingredient = ingredients[i]
+			for _, ingredient in pairs(ingredients) do
 				if ingredient["type"] == "fluid" then
 					out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 				end
@@ -248,8 +245,7 @@ function ezlib.recipe.remove.result(value, target_ingredient)
 				end
 			else
 				local results_normal = new_recipe.normal.results
-				for i=1, #results_normal do
-					local ingredient = results_normal[i]
+				for _, ingredient in pairs(results_normal) do
 					if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
 						--ingredients_normal[i] = nil
 						tremove(results_normal, i)
@@ -274,11 +270,10 @@ function ezlib.recipe.remove.result(value, target_ingredient)
 				message = message .. "  " .. target_ingredient .. "Removed from " .. value .. ".\n"
 			else
 				local results = new_recipe.results
-				for i=1, #results do
-					local ingredient = results[i]
+				for k, ingredient in pairs(results) do
 					if ingredient[1] == target_ingredient or ingredient["name"] == target_ingredient then
 						--ingredients[x] = nil
-						tremove(results, i)
+						tremove(results, k)
 					end
 				end
 				recipes[value].results = results
@@ -447,8 +442,7 @@ function ezlib.recipe.get.result (value)
 			end
 		end
 		if ftype == 0 then
-			for i=1, #ingredients do
-				local ingredient = ingredients[i]
+			for _, ingredient in pairs(ingredients) do
 				if ingredient["type"] == nil then
 					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
@@ -457,8 +451,7 @@ function ezlib.recipe.get.result (value)
 			end
 		end
 		if ftype == 1 then
-			for i=1, #ingredients do
-				local ingredient = ingredients[i]
+			for _, ingredient in pairs(ingredients) do
 				if ingredient["type"] == nil then
 					out[#out+1] = {type="item", name=ingredient[1], amount=ingredient[2]}
 				else
@@ -469,15 +462,14 @@ function ezlib.recipe.get.result (value)
 			end
 		end
 		if ftype == 2 then
-			for i=1, #ingredients do
-				local ingredient = ingredients[i]
+			for _, ingredient in pairs(ingredients) do
 				if ingredient["type"] == "fluid" then
 					out[#out+1] = {type=ingredient["type"], name=ingredient["name"], amount=ingredient["amount"]}
 				end
 			end
 		end
 		if fingredient ~= 1 then
-			for _,ing in ipairs(out) do
+			for _,ing in pairs(out) do
 				if ing["name"] == fingredient then
 					if ezlib.debug_self then
 						log(message .. "  Renurning false\n---------------------------------------------------------------------------------------------")
@@ -562,7 +554,7 @@ function ezlib.recipe.get.list (value)
 		for a, ing in pairs(value) do
 			if ing ~= nil then
 				if type(ing) == "string" then
-					for x,ing2 in ipairs(list) do
+					for x, ing2 in pairs(list) do
 						if recipes[list[x]][a] ~= ing or recipes[list[x]][a] == nil then
 							tinsert(del_list, ing2)
 						end
@@ -572,7 +564,7 @@ function ezlib.recipe.get.list (value)
 					for b in pairs(entities) do
 						local entity = entities[b]
 						if type(entity) == "string" then
-							for i,ing2 in ipairs(list) do
+							for i, ing2 in pairs(list) do
 								-- TODO: check
 								local v = recipes[list[i]][a][b]
 								if v ~= entity or v == nil then

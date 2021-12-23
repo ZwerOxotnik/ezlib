@@ -16,7 +16,7 @@ function ezlib.item.get.list(value)
 	local list = {}
 	local del_list = {}
 	if type(not_items) == "table" then
-		for _, ing in ipairs(not_items) do
+		for _, ing in pairs(not_items) do
 			local entities = data.raw[ing]
 			if entities then
 				for b in pairs(entities) do
@@ -28,7 +28,7 @@ function ezlib.item.get.list(value)
 			end
 		end
 		if value ~= nil and type(value) == "table" then
-			for _,ing in ipairs(list) do
+			for _, ing in pairs(list) do
 				local entity = data.raw[ing[2]][ing[1]]
 				for a in pairs(value) do
 					local t = value[a] -- ?
@@ -68,7 +68,7 @@ function ezlib.item.get.list(value)
 			for a in pairs(value) do
 				if value[a] ~= nil then
 					if type(value[a]) == "string" or type(value[a]) == "number" then
-						for x,ing2 in ipairs(list) do
+						for x, ing2 in pairs(list) do
 							local v = item[list[x]][a]
 							if v ~= value[a] or v == nil then
 								del_list[#del_list+1] = ing2
@@ -77,7 +77,7 @@ function ezlib.item.get.list(value)
 					elseif type(value[a]) == "table" then
 						for b in pairs(value[a]) do
 							if type(value[a][b]) == "string" or type(value[a][b]) == "number" then
-								for x,ing2 in ipairs(list) do
+								for x, ing2 in pairs(list) do
 									-- Does this work?
 									local v = item[list[x]][a]
 									if v ~= value[a][b] or v == nil then
